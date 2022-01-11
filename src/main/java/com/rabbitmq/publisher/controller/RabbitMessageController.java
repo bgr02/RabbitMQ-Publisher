@@ -1,5 +1,6 @@
 package com.rabbitmq.publisher.controller;
 
+import com.rabbitmq.publisher.dto.MessageInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -19,6 +20,24 @@ public class RabbitMessageController {
     void ackTestPublishMessage() {
         log.info("====================> Ack Test Publish Message");
         rabbitTemplate.convertAndSend("ack.test.exchange", "ack.routing.key", "Ack Test Message Publish");
+    }
+
+    @GetMapping("/publish/message-info-test")
+    void messageInfoTestPublishMessage() {
+        log.info("====================> MessageInfo Test Publish Message");
+
+        MessageInfo messageInfo = new MessageInfo();
+
+        messageInfo.setPublisher("Sender");
+        messageInfo.setMessage("MessageInfo Test Message Publish");
+
+        rabbitTemplate.convertAndSend("messageInfo.test.exchange", "messageInfo.routing.key", messageInfo);
+    }
+
+    @GetMapping("/publish/ack-receiver-test")
+    void ackTestPublishMessage2() {
+        log.info("====================> Ack Receiver Test Publish Message");
+        rabbitTemplate.convertAndSend("ack.receiver.exchange", "ack.receiver.routing.key", "Ack Receiver Test Message Publish");
     }
 
     @GetMapping("/publish/nack-test")

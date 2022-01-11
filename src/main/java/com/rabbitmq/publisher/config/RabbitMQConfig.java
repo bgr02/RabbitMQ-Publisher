@@ -1,5 +1,8 @@
 package com.rabbitmq.publisher.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
@@ -81,15 +84,25 @@ public class RabbitMQConfig {
     @Bean
     RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-        rabbitTemplate.setMessageConverter(jackson2JsonMessageConverter());
+        rabbitTemplate.setMessageConverter(jsonMessageConverter());
 
         return rabbitTemplate;
     }
 
     //필수 설정입니다.
     @Bean
-    public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
-        return new Jackson2JsonMessageConverter();
+    public Jackson2JsonMessageConverter jsonMessageConverter() {
+        //LocalDateTime serializable을 위해
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
+        objectMapper.registerModule(dateTimeModule());
+
+        return new Jackson2JsonMessageConverter(objectMapper);
+    }
+
+    @Bean
+    public JavaTimeModule dateTimeModule() {
+        return new JavaTimeModule();
     }
 
 }

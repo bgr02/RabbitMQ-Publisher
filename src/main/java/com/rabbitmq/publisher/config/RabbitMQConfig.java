@@ -84,6 +84,8 @@ public class RabbitMQConfig {
     @Bean
     RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+
+        rabbitTemplate.setChannelTransacted(true); //@Transcational이 붙은 것처럼 처리됩니다.
         rabbitTemplate.setMessageConverter(jsonMessageConverter());
 
         return rabbitTemplate;
